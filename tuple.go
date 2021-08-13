@@ -1,4 +1,4 @@
-package pyhton
+package python
 
 // #include<Python.h>
 import "C"

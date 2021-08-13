@@ -1,4 +1,4 @@
-package pyhton
+package python
 
 // #cgo pkg-config: python3
 // #cgo CFLAGS : -I./ -I/usr/include/python3.9

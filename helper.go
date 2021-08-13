@@ -1,4 +1,4 @@
-package pyhton
+package python
 
 // #include <Python.h>
 //PyObject * BuildValue(const char * name, int num) {
