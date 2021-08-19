@@ -7,6 +7,8 @@ package python
 import "C"
 import "os"
 
+type CPyObject = *C.PyObject
+
 /* These definitions must match corresponding definitions in graminit.h. */
 const (
 	singleInput   = 256
@@ -50,5 +52,5 @@ func GILStateRelease(state PyGILState_STATE) {
 }
 
 func Run(code string, globals *Dict, locals *Dict) *Object {
-	return togo(C.PyRun_StringFlags(C.CString(code), C.int(fileInput), toc((*Object)(globals)), toc((*Object)(locals)), nil))
+	return togo(C.PyRun_StringFlags(C.CString(code), C.int(fileInput), globals.C(), locals.C(), nil))
 }

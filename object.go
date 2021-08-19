@@ -6,7 +6,12 @@ import "C"
 type Object C.PyObject
 
 type PyObject interface {
+	C() CPyObject
 	Object() *Object
+}
+
+func (obj *Object) C() CPyObject {
+	return (CPyObject)(obj)
 }
 
 func (obj *Object) Object() *Object {
@@ -14,7 +19,7 @@ func (obj *Object) Object() *Object {
 }
 
 func (obj *Object) GetAttribute(name string) *Object {
-	return togo(C.PyObject_GetAttrString(toc(obj), C.CString(name)))
+	return togo(C.PyObject_GetAttrString(obj.C(), C.CString(name)))
 }
 
 func (obj *Object) Call(args ...interface{}) *Object {
@@ -25,40 +30,30 @@ func (obj *Object) Func() func(args ...interface{}) *Object {
 	return obj.Call
 }
 
-func toObj(obj interface{}) *Object {
-	switch o := obj.(type) {
-	case PyObject:
-		return o.Object()
-	case int:
-		return PyInt(o).Object()
-	case string:
-		return PyString(o)
-	case float64:
-		return PyFloat(o).Object()
-	}
-	return nil
-}
-
 func (obj *Object) CallFull(args []interface{}, kwargs map[string]interface{}) *Object {
 	tuple := NewTuple(len(args))
 	for i, arg := range args {
-		tuple.SetItem(i, toObj(arg))
+		tuple.SetItem(i, arg)
 	}
 	kw := NewDict()
 	for key, value := range kwargs {
-		kw.SetItem(key, toObj(value))
+		kw.SetItem(key, value)
 	}
-	return togo(C.PyObject_Call(toc(obj), toc((*Object)(tuple)), toc((*Object)(kw))))
+	return togo(C.PyObject_Call(obj.C(), tuple.C(), kw.C()))
 }
 
 func (obj *Object) CallOneArg(arg *Object) *Object {
-	return togo(C.PyObject_CallOneArg(toc(obj), toc(arg)))
+	return togo(C.PyObject_CallOneArg(obj.C(), arg.C()))
 }
 
 func (obj *Object) CallNoArgs() *Object {
-	return togo(C.PyObject_CallNoArgs(toc(obj)))
+	return togo(C.PyObject_CallNoArgs(obj.C()))
 }
 
 func (obj *Object) String() string {
-	return C.GoString(C.PyUnicode_AsUTF8(C.PyObject_Repr(toc(obj))))
+	return C.GoString(C.PyUnicode_AsUTF8(C.PyObject_Repr(obj.C())))
+}
+
+func (obj *Object) AsInt() *Int {
+	return (*Int)(obj)
 }
