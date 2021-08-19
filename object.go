@@ -1,14 +1,17 @@
 package python
 
 // #include <Python.h>
-//const char * PyObjectAsString(PyObject* object) {
-//    PyObject* repr = PyObject_Repr(object);
-//    PyObject* str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
-//    return PyBytes_AS_STRING(str);
-//}
 import "C"
 
 type Object C.PyObject
+
+type PyObject interface {
+	Object() *Object
+}
+
+func (obj *Object) Object() *Object {
+	return obj
+}
 
 func (obj *Object) GetAttribute(name string) *Object {
 	return togo(C.PyObject_GetAttrString(toc(obj), C.CString(name)))
@@ -24,20 +27,14 @@ func (obj *Object) Func() func(args ...interface{}) *Object {
 
 func toObj(obj interface{}) *Object {
 	switch o := obj.(type) {
-	case *Object:
-		return o
+	case PyObject:
+		return o.Object()
 	case int:
-		return Int(o)
+		return PyInt(o).Object()
 	case string:
-		return String(o)
-	}
-	switch o := obj.(type) {
-	case *Dict:
-		return (*Object)(o)
-	}
-	switch o := obj.(type) {
-	case *Tuple:
-		return (*Object)(o)
+		return PyString(o)
+	case float64:
+		return PyFloat(o).Object()
 	}
 	return nil
 }
@@ -63,5 +60,5 @@ func (obj *Object) CallNoArgs() *Object {
 }
 
 func (obj *Object) String() string {
-	return C.GoString(C.PyObjectAsString(toc(obj)))
+	return C.GoString(C.PyUnicode_AsUTF8(C.PyObject_Repr(toc(obj))))
 }

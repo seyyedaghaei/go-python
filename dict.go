@@ -9,6 +9,10 @@ func NewDict() *Dict {
 	return (*Dict)(togo(C.PyDict_New()))
 }
 
+func (dict *Dict) Object() *Object {
+	return (*Object)(dict)
+}
+
 func (dict *Dict) SetItem(key string, value interface{}) {
 	C.PyDict_SetItemString(toc((*Object)(dict)), C.CString(key), toc(toObj(value)))
 }

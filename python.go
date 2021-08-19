@@ -17,9 +17,13 @@ const (
 	fstringInput = 800
 )
 
-func Initialize() {
+func init() {
 	C.Py_Initialize()
 	dir, _ := os.Getwd()
+	AddPath(dir)
+}
+
+func AddPath(dir string) {
 	C.PyRun_SimpleString(C.CString("import sys\nsys.path.append(\"" + dir + "\")"))
 }
 
