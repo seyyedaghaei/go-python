@@ -1,8 +1,8 @@
 package python
 
 // #include <Python.h>
-//PyObject * BuildValue(const char * name, int num) {
-//    return Py_BuildValue(name, num);
+//PyObject * BuildIntValue(int num) {
+//    return Py_BuildValue("i", num);
 //}
 import "C"
 
@@ -21,5 +21,5 @@ func (i *Int) Int() int {
 }
 
 func PyInt(num int) *Int {
-	return (*Int)(C.BuildValue(C.CString("i"), C.int(num)))
+	return (*Int)(C.BuildIntValue(C.int(num)))
 }

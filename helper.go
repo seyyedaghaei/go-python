@@ -2,7 +2,9 @@ package python
 
 // #include <Python.h>
 import "C"
-import "reflect"
+import (
+	"reflect"
+)
 
 //togo converts a CPyObject to a *PyObject
 func togo(cobject CPyObject) *Object {
@@ -26,6 +28,13 @@ func toObj(obj interface{}) *Object {
 			list.SetItem(i, value.Index(i).Interface())
 		}
 		return list.Object()
+	case reflect.Map:
+		dict := NewDict()
+		keys := value.MapKeys()
+		for _, key := range keys {
+			dict.SetItem(key.Interface(), value.MapIndex(key).Interface())
+		}
+		return dict.Object()
 	}
 	switch o := obj.(type) {
 	case PyObject:
@@ -33,7 +42,7 @@ func toObj(obj interface{}) *Object {
 	case int:
 		return PyInt(o).Object()
 	case string:
-		return PyString(o)
+		return PyString(o).Object()
 	case float64:
 		return PyFloat(o).Object()
 	}
@@ -42,8 +51,4 @@ func toObj(obj interface{}) *Object {
 
 func toC(obj interface{}) CPyObject {
 	return toObj(obj).C()
-}
-
-func PyString(str string) *Object {
-	return togo(C.PyUnicode_FromString(C.CString(str)))
 }

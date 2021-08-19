@@ -17,6 +17,10 @@ func (dict *Dict) Object() *Object {
 	return (*Object)(dict)
 }
 
-func (dict *Dict) SetItem(key string, value interface{}) {
-	C.PyDict_SetItemString(dict.C(), C.CString(key), toC(value))
+func (dict *Dict) SetItem(key interface{}, value interface{}) {
+	C.PyDict_SetItem(dict.C(), toC(key), toC(value))
+}
+
+func (dict *Dict) GetItem(key interface{}) *Object {
+	return (*Object)(C.PyDict_GetItem(dict.C(), toC(key)))
 }

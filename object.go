@@ -30,15 +30,7 @@ func (obj *Object) Func() func(args ...interface{}) *Object {
 }
 
 func (obj *Object) CallFull(args []interface{}, kwargs map[string]interface{}) *Object {
-	tuple := NewTuple(len(args))
-	for i, arg := range args {
-		tuple.SetItem(i, arg)
-	}
-	kw := NewDict()
-	for key, value := range kwargs {
-		kw.SetItem(key, value)
-	}
-	return togo(C.PyObject_Call(obj.C(), tuple.C(), kw.C()))
+	return togo(C.PyObject_Call(obj.C(), toObj(args).AsList().AsTuple().C(), toC(kwargs)))
 }
 
 func (obj *Object) CallOneArg(arg *Object) *Object {
@@ -55,4 +47,28 @@ func (obj *Object) String() string {
 
 func (obj *Object) AsInt() *Int {
 	return (*Int)(obj)
+}
+
+func (obj *Object) AsFloat() *Float {
+	return (*Float)(obj)
+}
+
+func (obj *Object) AsTuple() *Tuple {
+	return (*Tuple)(obj)
+}
+
+func (obj *Object) AsList() *List {
+	return (*List)(obj)
+}
+
+func (obj *Object) AsDict() *Dict {
+	return (*Dict)(obj)
+}
+
+func (obj *Object) AsString() *String {
+	return (*String)(obj)
+}
+
+func (obj *Object) Type() *Object {
+	return (*Object)(C.PyObject_Type(obj.C()))
 }

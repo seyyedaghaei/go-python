@@ -33,6 +33,6 @@ func (list *List) Append(item interface{}) int {
 	return int(C.PyList_Append(list.C(), toC(item)))
 }
 
-func (list *List) AsTuple(item interface{}) *Tuple {
+func (list *List) AsTuple() *Tuple {
 	return (*Tuple)(C.PyList_AsTuple(list.C()))
 }
