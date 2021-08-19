@@ -6,7 +6,6 @@ import "C"
 type Object C.PyObject
 
 type PyObject interface {
-	C() CPyObject
 	Object() *Object
 }
 
