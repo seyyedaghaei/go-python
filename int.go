@@ -9,7 +9,7 @@ import "C"
 type Int C.PyObject
 
 func (i *Int) C() CPyObject {
-	return (CPyObject)(i)
+	return i.Object().C()
 }
 
 func (i *Int) Object() *Object {
@@ -18,6 +18,14 @@ func (i *Int) Object() *Object {
 
 func (i *Int) Int() int {
 	return int(C.PyFloat_AsDouble(i.C()))
+}
+
+func (i *Int) String() string {
+	return i.Object().String()
+}
+
+func (i *Int) Interface() interface{} {
+	return i.Object().Interface()
 }
 
 func PyInt(num int) *Int {

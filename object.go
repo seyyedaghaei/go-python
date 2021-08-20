@@ -69,6 +69,26 @@ func (obj *Object) AsString() *String {
 	return (*String)(obj)
 }
 
+func (obj *Object) Interface() interface{} {
+	if obj != nil {
+		switch (*obj.C()).ob_type {
+		case &C.PyUnicode_Type:
+			return obj.AsString().String()
+		case &C.PyFloat_Type:
+			return obj.AsFloat().Float64()
+		case &C.PyDict_Type:
+			return obj.AsDict().Map()
+		case &C.PyList_Type:
+			return obj.AsList().Slice()
+		case &C.PyTuple_Type:
+			return obj.AsTuple().Array()
+		case &C.PyLong_Type:
+			return obj.AsInt().Int()
+		}
+	}
+	return nil
+}
+
 func (obj *Object) Type() *Object {
 	return (*Object)(C.PyObject_Type(obj.C()))
 }
